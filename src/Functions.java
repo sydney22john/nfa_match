@@ -137,8 +137,16 @@ public class Functions {
 
     public static void optimize(DFA dfa) {
         mergeStatesWrapper(dfa);
+        System.out.println("--- After Merge ---");
+        System.out.println(dfa);
+
         removeUnreachableStates(dfa);
+        System.out.println("--- After Unreachable ---");
+        System.out.println(dfa);
+
         removeDeadStates(dfa);
+        System.out.println("--- After Dead ---");
+        System.out.println(dfa);
     }
 
     private static void removeDeadStates(DFA dfa) {
@@ -160,6 +168,7 @@ public class Functions {
             }
         }
         Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+        dfa.remapStateMap(-1, complement);
         dfa.reassignStateValues(complement);
         dfa.deleteDuplicates(complement);
     }
@@ -186,6 +195,7 @@ public class Functions {
             }
         }
         Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+        dfa.remapStateMap(-1, complement);
         dfa.reassignStateValues(complement);
         dfa.deleteDuplicates(complement);
     }

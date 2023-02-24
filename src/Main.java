@@ -7,8 +7,10 @@ public class Main {
         System.out.println(nfa);
 
         DFA dfa = Functions.NFAToDFA(nfa);
+        System.out.println("--- Original ---");
         System.out.println(dfa);
         Functions.optimize(dfa);
+        System.out.println("--- Final ---");
         System.out.println(dfa);
     }
 }
