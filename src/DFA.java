@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DFA {
     private ArrayList<ArrayList<Integer>> transitionTable = new ArrayList<>();
@@ -198,5 +199,11 @@ public class DFA {
         for (int i = 0; i < transitionTable.size(); i++) { difference.add(i); }
         difference.removeAll(reachableStates);
         return difference;
+    }
+
+    public Set<Integer> getAllStateTransitions(int currentState) {
+        return transitionTable.get(stateMap.get(currentState)).stream()
+                .filter(val -> val >= 0)
+                .collect(Collectors.toSet());
     }
 }

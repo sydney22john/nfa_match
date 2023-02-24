@@ -85,7 +85,6 @@ public class Functions {
             seenSets.add(S);
 
             for (String c : dfa.getAlphabet()) {
-//                if (c.equals(nfa.getLambda())) continue;
 
                 Set<Integer> R = followLambda(nfa, followChar(nfa, S, c));
                 dfa.setTransition(setMapping.getSetMapping(S), setMapping.getSetMapping(R), c);
@@ -138,7 +137,7 @@ public class Functions {
 
     public static void optimize(DFA dfa) {
         mergeStatesWrapper(dfa);
-//        removeUnreachableStates(dfa);
+        removeUnreachableStates(dfa);
         removeDeadStates(dfa);
     }
 
@@ -168,27 +167,28 @@ public class Functions {
     /*
     Idea: breadth first search on the graph, any states that I don't see are pruned
      */
-//    private static void removeUnreachableStates(DFA dfa) {
-//        Set<Integer> reachableStates = new TreeSet<>();
-//        Queue<Integer> toSearch = new LinkedList<>();
-//        toSearch.add(dfa.getTable().getStartState());
-//        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
-//
-//        while (!toSearch.isEmpty()) {
-//            int currentState = toSearch.poll();
-//            reachableStates.add(currentState);
-//            Set<Integer> toStates = dfa.getTable().getAllStateTransitions(currentState);
-//
-//            for (Integer state : toStates) {
-//                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
-//                    statesInQueue.add(state);
-//                    toSearch.add(state);
-//                }
-//            }
-//        }
-//        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
-//        dfa.deleteDuplicates(complement);
-//    }
+    private static void removeUnreachableStates(DFA dfa) {
+        Set<Integer> reachableStates = new TreeSet<>();
+        Queue<Integer> toSearch = new LinkedList<>();
+        toSearch.add(dfa.getStartState());
+        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
+
+        while (!toSearch.isEmpty()) {
+            int currentState = toSearch.poll();
+            reachableStates.add(currentState);
+            Set<Integer> toStates = dfa.getAllStateTransitions(currentState);
+
+            for (Integer state : toStates) {
+                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
+                    statesInQueue.add(state);
+                    toSearch.add(state);
+                }
+            }
+        }
+        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+        dfa.reassignStateValues(complement);
+        dfa.deleteDuplicates(complement);
+    }
 
     public static void mergeStatesWrapper(DFA dfa) {
         while (true) {
