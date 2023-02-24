@@ -52,4 +52,8 @@ public class Functions {
         nfa.setStartState(0);
     }
 
+    public static DFA NFAToDFA(NFA nfa) {
+
+    }
+
 }
