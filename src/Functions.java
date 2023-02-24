@@ -138,56 +138,56 @@ public class Functions {
 
     public static void optimize(DFA dfa) {
         mergeStatesWrapper(dfa);
-        removeUnreachableStates(dfa);
-        removeDeadStates(dfa);
+//        removeUnreachableStates(dfa);
+//        removeDeadStates(dfa);
     }
 
-    private static void removeDeadStates(DFA dfa) {
-        Set<Integer> reachableStates = new TreeSet<>();
-        Queue<Integer> toSearch = new LinkedList<>();
-        toSearch.addAll(dfa.acceptingStates());
-        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
-
-        while (!toSearch.isEmpty()) {
-            int currentState = toSearch.poll();
-            reachableStates.add(currentState);
-            Set<Integer> reachableFrom = dfa.reachableStatesFrom(currentState);
-
-            for (Integer state : reachableFrom) {
-                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
-                    statesInQueue.add(state);
-                    toSearch.add(state);
-                }
-            }
-        }
-        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
-        dfa.deleteDuplicates(complement);
-    }
+//    private static void removeDeadStates(DFA dfa) {
+//        Set<Integer> reachableStates = new TreeSet<>();
+//        Queue<Integer> toSearch = new LinkedList<>();
+//        toSearch.addAll(dfa.acceptingStates());
+//        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
+//
+//        while (!toSearch.isEmpty()) {
+//            int currentState = toSearch.poll();
+//            reachableStates.add(currentState);
+//            Set<Integer> reachableFrom = dfa.reachableStatesFrom(currentState);
+//
+//            for (Integer state : reachableFrom) {
+//                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
+//                    statesInQueue.add(state);
+//                    toSearch.add(state);
+//                }
+//            }
+//        }
+//        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+//        dfa.deleteDuplicates(complement);
+//    }
 
     /*
     Idea: breadth first search on the graph, any states that I don't see are pruned
      */
-    private static void removeUnreachableStates(DFA dfa) {
-        Set<Integer> reachableStates = new TreeSet<>();
-        Queue<Integer> toSearch = new LinkedList<>();
-        toSearch.add(dfa.getTable().getStartState());
-        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
-
-        while (!toSearch.isEmpty()) {
-            int currentState = toSearch.poll();
-            reachableStates.add(currentState);
-            Set<Integer> toStates = dfa.getTable().getAllStateTransitions(currentState);
-
-            for (Integer state : toStates) {
-                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
-                    statesInQueue.add(state);
-                    toSearch.add(state);
-                }
-            }
-        }
-        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
-        dfa.deleteDuplicates(complement);
-    }
+//    private static void removeUnreachableStates(DFA dfa) {
+//        Set<Integer> reachableStates = new TreeSet<>();
+//        Queue<Integer> toSearch = new LinkedList<>();
+//        toSearch.add(dfa.getTable().getStartState());
+//        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
+//
+//        while (!toSearch.isEmpty()) {
+//            int currentState = toSearch.poll();
+//            reachableStates.add(currentState);
+//            Set<Integer> toStates = dfa.getTable().getAllStateTransitions(currentState);
+//
+//            for (Integer state : toStates) {
+//                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
+//                    statesInQueue.add(state);
+//                    toSearch.add(state);
+//                }
+//            }
+//        }
+//        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+//        dfa.deleteDuplicates(complement);
+//    }
 
     public static void mergeStatesWrapper(DFA dfa) {
         while (true) {
@@ -200,17 +200,17 @@ public class Functions {
         Stack<Set<Integer>> L_set = new Stack<>();
         Stack<Stack<String>> L_alpha = new Stack<>();
 
-        L_set.push(dfa.acceptingStates());
-        L_alpha.push(dfa.getAlpha());
+        L_set.push(dfa.getAcceptStates());
+        L_alpha.push(dfa.getAlphabetStack());
 
         L_set.push(dfa.nonAcceptingStates());
-        L_alpha.push(dfa.getAlpha());
+        L_alpha.push(dfa.getAlphabetStack());
 
         while (!L_set.empty()) {
             Set<Integer> S = L_set.pop();
             Stack<String> C = L_alpha.pop();
 
-            ArrayList<Set<Integer>> partitionedStates = partitionStates(S, C.pop(), dfa.getTable());
+            ArrayList<Set<Integer>> partitionedStates = partitionStates(S, C.pop(), dfa);
             for (int i = 0; i < partitionedStates.size(); i++) {
                 Set<Integer> X_i = partitionedStates.get(i);
                 if (X_i.size() > 1) {
@@ -218,7 +218,7 @@ public class Functions {
                         M.add(X_i);
                     } else {
                         L_set.push(X_i);
-                        L_alpha.push(C);
+                        L_alpha.push((Stack<String>) C.clone());
                     }
                 }
             }
@@ -229,7 +229,7 @@ public class Functions {
             int stateToKeep = (Integer) subset.toArray()[0];
             subset.remove(stateToKeep);
             removedIndices.addAll(subset);
-            dfa.removeDupilcateStates(stateToKeep, subset);
+            dfa.remapStateMap(stateToKeep, subset);
 
             if (dfa.startStateInSet(subset)) {
                 dfa.setStartState(stateToKeep);
@@ -240,10 +240,10 @@ public class Functions {
         return true;
     }
 
-    private static ArrayList<Set<Integer>> partitionStates(Set<Integer> S, String c, TransitionTableDFA transitionTable) {
+    private static ArrayList<Set<Integer>> partitionStates(Set<Integer> S, String c, DFA dfa) {
         Map<Integer, Set<Integer>> partitionedStates = new TreeMap<>();
         for (int state : S) {
-            int toState = transitionTable.getTransition(state, c);
+            int toState = dfa.getTransition(state, c);
             if (!partitionedStates.containsKey(toState)) {
                 partitionedStates.put(toState, new TreeSet<>());
             }

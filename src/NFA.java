@@ -4,12 +4,14 @@ import java.util.stream.Collectors;
 public class NFA {
 
     private ArrayList<ArrayList<Set<Integer>>> transitionTable = new ArrayList<>();
+    // contains the mapped version of the integer
     private Set<Integer> acceptStates = new TreeSet<>();
     private Map<String, Integer> alphabetMap = new HashMap<>();
     private Map<Integer, Integer> stateMap = new HashMap<>();
     private Integer startState;
     private String lambda;
     private String[] alphabet;
+    // all the unmapped states
     private Set<Integer> allStates = new TreeSet<>();
 
     public NFA() { }
@@ -198,7 +200,12 @@ public class NFA {
     private void remakeMap() {
         HashMap<Integer, Integer> newMap =  new HashMap<>();
         for (Integer state : allStates) {
+            // 0 -> 0, 11 -> 1, etc
             newMap.put(state, newMap.size());
+            if (acceptStates.contains(stateMap.get(state))) {
+                acceptStates.remove(stateMap.get(state));
+                acceptStates.add(newMap.get(state));
+            }
         }
         reorder(newMap);
         stateMap = newMap;

@@ -8,5 +8,7 @@ public class Main {
 
         DFA dfa = Functions.NFAToDFA(nfa);
         System.out.println(dfa);
+        Functions.optimize(dfa);
+        System.out.println(dfa);
     }
 }
