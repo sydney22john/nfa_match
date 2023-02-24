@@ -60,7 +60,7 @@ public class DFA {
 
     public void initTransitionRow(int state) {
         // if state isn't in state map add it to the map
-        int mappedState = getStateMapping(state);
+        setStateMapping(state);
         ArrayList<Integer> row = new ArrayList<>();
         for (int i = 0; i < alphabet.length; i++) {
             row.add(-1);
@@ -87,7 +87,6 @@ public class DFA {
     }
 
     private int getStateMapping(int state) {
-        setStateMapping(state);
         return stateMap.get(state);
     }
 
@@ -158,6 +157,7 @@ public class DFA {
                 toDecrement.put(e.getKey(), e.getValue() - decrementValue);
             }
         }
+        acceptStates.removeAll(removedIndices);
         for (Map.Entry<Integer, Integer> e : toDecrement.entrySet()) {
             if (acceptStates.contains(e.getKey())) {
                 acceptStates.remove(e.getKey());
@@ -176,9 +176,6 @@ public class DFA {
         // removing the duplicate rows
         for (int i = toRemoveArray.length - 1; i >= 0; i--) {
             transitionTable.remove((int) toRemoveArray[i]);
-            if (acceptStates.contains(stateMap.get(toRemoveArray[i]))) {
-                acceptStates.remove(stateMap.get(toRemoveArray[i]));
-            }
         }
         stateMap.clear();
         for (int i = 0; i < transitionTable.size(); i++) {
