@@ -181,4 +181,15 @@ public class DFA {
             stateMap.put(i, i);
         }
     }
+
+    public Set<Integer> reachableStatesFrom(int currentState) {
+        Set<Integer> reachableFrom = new TreeSet<>();
+        for (int i = 0; i < transitionTable.size(); i++) {
+            ArrayList<Integer> row = transitionTable.get(i);
+            if (row.contains(currentState)) {
+                reachableFrom.add(i);
+            }
+        }
+        return reachableFrom;
+    }
 }

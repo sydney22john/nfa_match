@@ -142,27 +142,27 @@ public class Functions {
 //        removeDeadStates(dfa);
     }
 
-//    private static void removeDeadStates(DFA dfa) {
-//        Set<Integer> reachableStates = new TreeSet<>();
-//        Queue<Integer> toSearch = new LinkedList<>();
-//        toSearch.addAll(dfa.acceptingStates());
-//        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
-//
-//        while (!toSearch.isEmpty()) {
-//            int currentState = toSearch.poll();
-//            reachableStates.add(currentState);
-//            Set<Integer> reachableFrom = dfa.reachableStatesFrom(currentState);
-//
-//            for (Integer state : reachableFrom) {
-//                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
-//                    statesInQueue.add(state);
-//                    toSearch.add(state);
-//                }
-//            }
-//        }
-//        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
-//        dfa.deleteDuplicates(complement);
-//    }
+    private static void removeDeadStates(DFA dfa) {
+        Set<Integer> reachableStates = new TreeSet<>();
+        Queue<Integer> toSearch = new LinkedList<>();
+        toSearch.addAll(dfa.getAcceptStates());
+        Set<Integer> statesInQueue = new TreeSet<>(toSearch);
+
+        while (!toSearch.isEmpty()) {
+            int currentState = toSearch.poll();
+            reachableStates.add(currentState);
+            Set<Integer> reachableFrom = dfa.reachableStatesFrom(currentState);
+
+            for (Integer state : reachableFrom) {
+                if (!reachableStates.contains(state) && !statesInQueue.contains(state)) {
+                    statesInQueue.add(state);
+                    toSearch.add(state);
+                }
+            }
+        }
+        Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+        dfa.deleteDuplicates(complement);
+    }
 
     /*
     Idea: breadth first search on the graph, any states that I don't see are pruned
