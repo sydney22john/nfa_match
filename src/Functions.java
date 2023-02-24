@@ -139,7 +139,7 @@ public class Functions {
     public static void optimize(DFA dfa) {
         mergeStatesWrapper(dfa);
 //        removeUnreachableStates(dfa);
-//        removeDeadStates(dfa);
+        removeDeadStates(dfa);
     }
 
     private static void removeDeadStates(DFA dfa) {
@@ -161,6 +161,7 @@ public class Functions {
             }
         }
         Set<Integer> complement = dfa.reachableStatesComplement(reachableStates);
+        dfa.reassignStateValues(complement);
         dfa.deleteDuplicates(complement);
     }
 
