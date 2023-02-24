@@ -12,29 +12,40 @@ public class NFA {
 
     public NFA() { }
 
-
     /*
-    alphabet
+    GETTERS : trivial
      */
+    public Set<Integer> getAcceptStates() {
+        return acceptStates;
+    }
+
     public String[] getAlphabet() {
         return alphabet;
     }
+
+    public String getLambda() {
+        return lambda;
+    }
+    public Integer getStartState() {
+        return startState;
+    }
+
+    public Set<Integer> getStartStateAsSet() {
+        Set<Integer> s = new TreeSet<>();
+        s.add(startState);
+        return s;
+    }
+
+    /*
+    SETTERS : trivial
+     */
 
     public void setAlphabet(String[] alphabet) {
         this.alphabet = alphabet;
     }
 
-
-    public Integer getStartState() {
-        return startState;
-    }
-
     public void setStartState(Integer startState) {
         this.startState = startState;
-    }
-
-    public String getLambda() {
-        return lambda;
     }
 
     public void setLambda(String lambda) {
@@ -98,6 +109,17 @@ public class NFA {
         transitionTable.add(row);
     }
 
+    public Set<Integer> getTransition(int fromState, String letter) {
+        return getRow(fromState).get(alphabetMap.get(letter));
+    }
+
+    public Set<Integer> getLambdaTransition(int fromState) {
+        return getTransition(fromState, lambda);
+    }
+
+    private ArrayList<Set<Integer>> getRow(int fromState) {
+        return transitionTable.get(getStateMapping(fromState));
+    }
 
     /*
     acceptStates functions

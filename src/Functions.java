@@ -1,6 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 
 public class Functions {
 
@@ -53,7 +56,33 @@ public class Functions {
     }
 
     public static DFA NFAToDFA(NFA nfa) {
+        DFA dfa = new DFA();
+        SetToIntMapping setMapping = new SetToIntMapping();
 
+        Stack<Set<Integer>> L = new Stack<>();
+        Set<Integer> A = nfa.getAcceptStates();
+        Set<Integer> i = nfa.getStartStateAsSet();
+        Set<Integer> B = followLambda(nfa, i);
+
+
+        return dfa;
+    }
+
+    public static Set<Integer> followLambda(NFA nfa, Set<Integer> nfaSubset) {
+        Stack<Integer> M = new Stack<>();
+        for (Integer state : nfaSubset) { M.push(state); }
+
+        while (!M.empty()) {
+            int t = M.pop();
+            Set<Integer> lambdaTransitions = nfa.getLambdaTransition(t);
+            for (Integer toState : lambdaTransitions) {
+                if (!nfaSubset.contains(toState)) {
+                    nfaSubset.add(toState);
+                    M.push(toState);
+                }
+            }
+        }
+        return nfaSubset;
     }
 
 }
