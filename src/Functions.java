@@ -1,9 +1,7 @@
+import javax.lang.model.type.IntersectionType;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Functions {
 
@@ -56,7 +54,11 @@ public class Functions {
     }
 
     public static DFA NFAToDFA(NFA nfa) {
+        HashSet<Set<Integer>> seenSets = new HashSet<>();
         DFA dfa = new DFA();
+        dfa.setAlphabet(Arrays.copyOfRange(nfa.getAlphabet(), 0, nfa.getAlphabet().length - 1));
+        dfa.makeAlphabetMap();
+
         SetToIntMapping setMapping = new SetToIntMapping();
 
         Stack<Set<Integer>> L = new Stack<>();
@@ -64,6 +66,33 @@ public class Functions {
         Set<Integer> i = nfa.getStartStateAsSet();
         Set<Integer> B = followLambda(nfa, i);
 
+        dfa.initTransitionRow(setMapping.getSetMapping(B));
+        dfa.setStartState(setMapping.getSetMapping(B));
+
+        if (doSetsIntersect(A, B)) {
+            dfa.addToAcceptStates(setMapping.getSetMapping(B));
+        }
+
+        L.push(B);
+
+        while (!L.empty()) {
+            Set<Integer> S = L.pop();
+            seenSets.add(S);
+
+            for (String c : dfa.getAlphabet()) {
+//                if (c.equals(nfa.getLambda())) continue;
+
+                Set<Integer> R = followLambda(nfa, followChar(nfa, S, c));
+                dfa.setTransition(setMapping.getSetMapping(S), setMapping.getSetMapping(R), c);
+                if (!R.isEmpty() && !dfa.stateExists(setMapping.getSetMapping(R))) {
+                    dfa.initTransitionRow(setMapping.getSetMapping(R));
+                    if (doSetsIntersect(A, R)) {
+                        dfa.addToAcceptStates(setMapping.getSetMapping(R));
+                    }
+                    L.push(R);
+                }
+            }
+        }
 
         return dfa;
     }
@@ -92,6 +121,12 @@ public class Functions {
         }
 
         return F;
+    }
+
+    public static boolean doSetsIntersect(Set<Integer> A, Set<Integer> B) {
+        Set<Integer> temp = new TreeSet<>(A);
+        temp.retainAll(B);
+        return temp.size() > 0;
     }
 
 }

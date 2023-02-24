@@ -1,15 +1,17 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
 public class SetToIntMapping {
-    private Map<TreeSet<Integer>, Integer> setMapping = new HashMap<>();
+    private Map<Set<Integer>, Integer> setMapping = new HashMap<>();
 
-    public Integer getSetMapping(TreeSet<Integer> set) {
+    public Integer getSetMapping(Set<Integer> set) {
+        if (set.isEmpty()) return -1;
+        setSetMapping(set);
         return setMapping.get(set);
     }
 
-    public void setSetMapping(TreeSet<Integer> set) {
+    public void setSetMapping(Set<Integer> set) {
         if (!setMapping.containsKey(set)) {
             setMapping.put(set, setMapping.size());
         }

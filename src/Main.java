@@ -6,6 +6,7 @@ public class Main {
         NFA nfa = Functions.readNFAFromFile(cmdArgs.getInputFile());
         System.out.println(nfa);
 
-        Functions.NFAToDFA(nfa);
+        DFA dfa = Functions.NFAToDFA(nfa);
+        System.out.println(dfa);
     }
 }
