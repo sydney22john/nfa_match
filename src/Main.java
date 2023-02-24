@@ -4,15 +4,18 @@ public class Main {
         cmdArgs.parseArgs(args);
 
         NFA nfa = Functions.readNFAFromFile(cmdArgs.getInputFile());
-        System.out.println(nfa);
 
         DFA dfa = Functions.NFAToDFA(nfa);
         System.out.println("--- Original ---");
         System.out.println(dfa);
+
         Functions.optimize(dfa);
+
         System.out.println("--- Final ---");
         System.out.println(dfa);
 
         Functions.matchTokens(dfa, cmdArgs.getTokens());
+
+        Functions.writeDFAToFile(dfa, cmdArgs.getOutputFile());
     }
 }

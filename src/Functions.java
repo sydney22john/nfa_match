@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Functions {
@@ -277,5 +279,15 @@ public class Functions {
                     .append("\n");
         }
         System.out.println(str.toString());
+    }
+
+    public static void writeDFAToFile(DFA dfa, String outputFile) {
+        try {
+            FileWriter myWriter = new FileWriter(outputFile);
+            myWriter.write(dfa.toString());
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
