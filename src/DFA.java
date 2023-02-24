@@ -192,4 +192,11 @@ public class DFA {
         }
         return reachableFrom;
     }
+
+    public Set<Integer> reachableStatesComplement(Set<Integer> reachableStates) {
+        Set<Integer> difference = new TreeSet<>();
+        for (int i = 0; i < transitionTable.size(); i++) { difference.add(i); }
+        difference.removeAll(reachableStates);
+        return difference;
+    }
 }
