@@ -113,7 +113,7 @@ public class DFA {
                     .append(i)
                     .append(" ");
             for (Integer transition : transitionTable.get(i)) {
-                str.append(transition.toString()).append(" ");
+                str.append(transition == -1 ? "E" : transition).append(" ");
             }
             str.append("\n");
         }

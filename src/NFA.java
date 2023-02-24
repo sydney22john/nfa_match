@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NFA {
 
@@ -9,6 +10,7 @@ public class NFA {
     private Integer startState;
     private String lambda;
     private String[] alphabet;
+    private Set<Integer> allStates = new TreeSet<>();
 
     public NFA() { }
 
@@ -71,6 +73,7 @@ public class NFA {
     private void setStateMapping(int state) {
         if (!stateMap.containsKey(state)) {
             stateMap.put(state, stateMap.size());
+            allStates.add(state);
         }
     }
 
@@ -101,6 +104,7 @@ public class NFA {
 
     public void initTransitionRow(int state) {
         // if state isn't in state map add it to the map
+        if (stateExists(state)) return;
         int mappedState = getStateMapping(state);
         ArrayList<Set<Integer>> row = new ArrayList<>();
         for (int i = 0; i < alphabet.length; i++) {
@@ -136,11 +140,17 @@ public class NFA {
         StringBuilder str = new StringBuilder();
 
         for (int i = 0; i < transitionTable.size(); i++) {
+            int originalState = 0;
+            for (Map.Entry<Integer, Integer> entry : stateMap.entrySet()) {
+                if (entry.getValue() == i) {
+                    originalState = entry.getKey();
+                }
+            }
+            originalState = i;
             str.append(acceptStates.contains(i) ? "+ " : "- ")
-                    .append(i)
+                    .append(originalState)
                     .append(" ");
-            for (Set<Integer> transition :
-                    transitionTable.get(i)) {
+            for (Set<Integer> transition : transitionTable.get(i)) {
                 str.append(transition.toString()).append(" ");
             }
             str.append("\n");
@@ -148,4 +158,50 @@ public class NFA {
 
         return str.toString();
     }
+
+    public void makeStateMap(Scanner fileRead) {
+
+    }
+
+    public void renumber() {
+        remakeMap();
+        for (int i = 0; i < transitionTable.size(); i++) {
+            ArrayList<Set<Integer>> row = transitionTable.get(i);
+            for (int j = 0; j < row.size(); j++) {
+                Set<Integer> newSet = row.get(j).stream()
+                        .map(val -> stateMap.get(val))
+                        .collect(Collectors.toSet());
+                row.set(j, newSet);
+            }
+        }
+        Map<Integer, Integer> newMap = new HashMap<>();
+        for (int i = 0; i < stateMap.size(); i++) {
+            newMap.put(i, i);
+        }
+        stateMap = newMap;
+    }
+
+    private void reorder(Map<Integer, Integer> reference) {
+        ArrayList<ArrayList<Set<Integer>>> newTable = new ArrayList<>();
+        for (int i = 0; i < transitionTable.size(); i++) {
+            newTable.add(new ArrayList<>());
+        }
+        for (Integer state : allStates) {
+            newTable.set(reference.get(state), transitionTable.get(stateMap.get(state)));
+        }
+//        for (Map.Entry<Integer, Integer> e : stateMap.entrySet()) {
+//            newTable.set(e.getKey(), transitionTable.get(e.getValue()));
+//        }
+        transitionTable = newTable;
+    }
+
+    private void remakeMap() {
+        HashMap<Integer, Integer> newMap =  new HashMap<>();
+        for (Integer state : allStates) {
+            newMap.put(state, newMap.size());
+        }
+        reorder(newMap);
+        stateMap = newMap;
+    }
+
 }
