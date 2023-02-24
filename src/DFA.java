@@ -176,6 +176,9 @@ public class DFA {
         // removing the duplicate rows
         for (int i = toRemoveArray.length - 1; i >= 0; i--) {
             transitionTable.remove((int) toRemoveArray[i]);
+            if (acceptStates.contains(stateMap.get(toRemoveArray[i]))) {
+                acceptStates.remove(stateMap.get(toRemoveArray[i]));
+            }
         }
         stateMap.clear();
         for (int i = 0; i < transitionTable.size(); i++) {
@@ -205,5 +208,22 @@ public class DFA {
         return transitionTable.get(stateMap.get(currentState)).stream()
                 .filter(val -> val >= 0)
                 .collect(Collectors.toSet());
+    }
+
+    public int matchToken(String token) {
+        int currentState = startState;
+        // handling empty strings
+        if (token.isEmpty()) {
+            return acceptStates.contains(currentState) ? -1 : 0;
+        }
+
+        int i;
+        for (i = 0; i < token.length(); i++) {
+            currentState = getTransition(currentState, String.valueOf(token.charAt(i)));
+            // not a valid transition
+            if (currentState == -1) return i + 1;
+        }
+        // either the string is valid or we return 'one more than the length of the token'
+        return acceptStates.contains(currentState) ? -1 : i + 1;
     }
 }

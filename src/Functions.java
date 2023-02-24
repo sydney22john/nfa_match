@@ -1,4 +1,3 @@
-import javax.lang.model.type.IntersectionType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -265,5 +264,18 @@ public class Functions {
             ans.add(value);
         }
         return ans;
+    }
+
+    public static void matchTokens(DFA dfa, String[] tokens) {
+        StringBuilder str = new StringBuilder();
+        for (String token : tokens) {
+            int returnVal = dfa.matchToken(token);
+            // output string
+            str.append(token).append("\n");
+            str.append("OUTPUT ")
+                    .append(returnVal == -1 ? ":M:" : returnVal)
+                    .append("\n");
+        }
+        System.out.println(str.toString());
     }
 }

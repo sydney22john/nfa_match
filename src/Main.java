@@ -12,5 +12,7 @@ public class Main {
         Functions.optimize(dfa);
         System.out.println("--- Final ---");
         System.out.println(dfa);
+
+        Functions.matchTokens(dfa, cmdArgs.getTokens());
     }
 }
