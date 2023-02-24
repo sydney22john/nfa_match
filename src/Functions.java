@@ -85,4 +85,13 @@ public class Functions {
         return nfaSubset;
     }
 
+    public static Set<Integer> followChar(NFA nfa, Set<Integer> nfaSubset, String letter) {
+        Set<Integer> F = new TreeSet<>();
+        for (Integer state : nfaSubset) {
+            F.addAll(nfa.getTransition(state, letter));
+        }
+
+        return F;
+    }
+
 }
